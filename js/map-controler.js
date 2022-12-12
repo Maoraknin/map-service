@@ -1,6 +1,5 @@
 'use strict'
 
-var gMap
 
 function onInit() {
     getSavedLocations()
@@ -10,7 +9,6 @@ function onInit() {
     document.body.style.color = userPref.textColor
     document.body.style.backgroundColor = userPref.bgColor
     renderLocation()
-
 }
 
 
@@ -18,6 +16,8 @@ function onInit() {
 
 
 function initMap(lat = 32, lng = 35) {
+    document.getElementById("latitude").innerHTML = lat
+    document.getElementById("longitude").innerHTML = lng
     var elMap = document.querySelector('.map')
     var options = {
         center: { lat, lng },
@@ -28,9 +28,6 @@ function initMap(lat = 32, lng = 35) {
         elMap,
         options
     )
-
-    gMap = map
-
 
     new google.maps.Marker({
         position: new google.maps.LatLng(lat, lng),
@@ -59,53 +56,22 @@ function initMap(lat = 32, lng = 35) {
         infoWindow.open(map);
         gCurrCords = JSON.parse(infoWindow.content)
         // marker.position = gCurrCords
-        if(onMapClick()){
-            renderLocation()
-            renderMarkers(map)
-        }
-    
+        onMapClick()
+        renderLocation()
     });
 
-    renderMarkers(map)
 
 }
 
-// function deleteMarker(id){
-//     const location = getLocationCordsById(id)
-//     var marker = new google.maps.Marker({
-//         position: new google.maps.LatLng(lat, lng),
-//         map
-//     })
-//     // new google.maps.Marker({
-//     //     position: new google.maps.LatLng(location.lat, location.lng),
-//     //     map: null
-//     // })
-//     console.log(location.lat, location.lng);
 
-// }
-
-function renderMarkers(map) {
-    const places = getSavedLocations()
-    console.log(places);
-    places.forEach(place => {
-        new google.maps.Marker({
-            name: place.name,
-            position: { lat: +place.lat, lng: +place.lng },
-            map,
-        })
-    })
-}
-
-function onLocationDelete(id) {
-    // deleteMarker(id)
+function onLocationDelete(id){
     locationDelete(id)
     renderLocation()
-    renderMarkers(gMap)
 }
 
-function onShowLocation(id) {
+function onShowLocation(id){
     const location = getLocationCordsById(id)
-    initMap(location.lat, location.lng)
+    initMap(location.lat , location.lng)
 
 }
 
@@ -116,8 +82,8 @@ function renderLocation() {
         return `<div class="location-card card">
             <h5>${location.name}</h5>
             <p class="card-text">Save:    ${location.time}.</p>
-            <a class="btn btn-danger card-btn" onclick="onLocationDelete('${location.id}')">delete location</a>
-            <a class="btn btn-warning card-btn" onclick="onShowLocation('${location.id}')">Show location 📍</a>
+            <button class="btn btn-danger card-btn" onclick="onLocationDelete('${location.id}')">delete location</button>
+            <button class="btn btn-warning card-btn" onclick="onShowLocation('${location.id}')">Show location 📍</button>
         </div>`
     })
     document.querySelector('.location-container').innerHTML = strHtml.join()
@@ -133,20 +99,19 @@ function getPosition() {
 
     // One shot position retrieval...
     navigator.geolocation.getCurrentPosition(showLocation, handleLocationError)
-    renderMarkers(map)
-
+    
     // ...or continous watch
     // navigator.geolocation.watchPosition(showLocation, handleLocationError)
 }
 
 function showLocation(position) {
-
+    
     console.log(position)
-    const { latitude: lat, longitude: lng, accuracy } = position.coords
+    const {latitude: lat, longitude: lng, accuracy} = position.coords
 
     document.getElementById("latitude").innerHTML = lat
     document.getElementById("longitude").innerHTML = lng
-
+    
     initMap(lat, lng)
 }
 

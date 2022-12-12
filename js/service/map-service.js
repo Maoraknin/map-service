@@ -14,14 +14,19 @@ function changeMarkerPosition(marker) {
 
 function onMapClick() {
     var name = prompt('please describe location')
-    
-    if (!name) return false
-    
 
+   
+
+    let date = new Date();
+    let current_date = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
+    let current_time = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    let date_time = current_date + " " + current_time;
+
+    if (!name) name = 'elhanan'
     const chosenLocation = {
         name: name,
         id: makeId(),
-        time: getTime(),
+        time: date_time,
         lat: gCurrCords.lat,
         lng: gCurrCords.lng
     }
@@ -32,7 +37,6 @@ function onMapClick() {
     // })
     gSavedLocations.push(chosenLocation)
     saveToStorage(LOCATION_KEY, gSavedLocations)
-    return true
 
 }
 
@@ -43,41 +47,22 @@ function locationDelete(id) {
     locations.splice(idxForDelete, 1)
     saveToStorage(LOCATION_KEY, locations)
     gSavedLocations = locations
-
+    
 }
-
-function getTime(){
-    let date = new Date();
-    let current_date = date.getDate() + "/" + (date.getMonth() + 1) + "/" + date.getFullYear();
-    let current_time = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    let date_time = current_date + " " + current_time;
-    return date_time
-}
-
-/////////////////////////////////////////////
-/////////////////////////////////////////////
-/////////////////////////////////////////////
-/////////////////////////////////////////////
-/////////////////////////////////////////////
 
 function getSavedLocations() {
-    if (loadFromStorage(LOCATION_KEY) && loadFromStorage(LOCATION_KEY).length) gSavedLocations = loadFromStorage(LOCATION_KEY)
-    else {
-        const startCords = getStartCords()
-        startCords.name = 'Start location'
-        startCords.id = makeId()
-        
-        startCords.time = getTime()
-        // console.log(startCords);
-        // const cordsObj = {startCords.lat, startCords[lng]}
-        gSavedLocations = [startCords]
-        saveToStorage(LOCATION_KEY, gSavedLocations)
-    }
-    return gSavedLocations
+    if (loadFromStorage(LOCATION_KEY)) gSavedLocations = loadFromStorage(LOCATION_KEY)
+    else gSavedLocations = []
 }
 
+function getStartCords() {
+    return loadFromStorage(USER_KEY).mapCords
+}
 
-function getLocationCordsById(id) {
+function getLocationCordsById(id){
+    console.log(id);
+    console.log(gSavedLocations);
+    console.log('here',gSavedLocations.find(location => id === location.id));
     return gSavedLocations.find(location => id === location.id)
 }
 
